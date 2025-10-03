@@ -102,6 +102,28 @@ OK
 	**504 Gateway Timeout** — этот ответ об ошибке выдается, когда сервер действует как шлюз и не может получить ответ за отведенное время.
 	**505 HTTP Version Not Supported** — версия HTTP, используемая в запросе, не поддерживается сервером.
 
+ GET
+   The GET method indicates that the script should produce a document
+   based on the meta-variable values.  By convention, the GET method is
+   'safe' and 'idempotent' and SHOULD NOT have the significance of
+   taking an action other than producing a document.
+
+   The meaning of the GET method may be modified and refined by
+   protocol-specific meta-variables.
+   
+POST
+
+   The POST method is used to request the script perform processing and
+   produce a document based on the data in the request message-body, in
+   addition to meta-variable values.  A common use is form submission in
+   HTML [[18](https://datatracker.ietf.org/doc/html/rfc3875#ref-18)], intended to initiate processing by the script that has a
+   permanent affect, such a change in a database.
+   
+   The script MUST check the value of the CONTENT_LENGTH variable before
+   reading the attached message-body, and SHOULD check the CONTENT_TYPE
+   value before processing it.
+   
+
 #### 2. Язык разметки HTML. Особенности, основные теги и атрибуты тегов.
 #### 3. Структура HTML-страницы. Объектная модель документа (DOM).
 DOM (Document Object Model) — это специальная древовидная структура, которая позволяет управлять HTML-разметкой из JavaScript-кода. Управление обычно состоит из добавления и удаления элементов, изменения их стилей и содержимого.
@@ -199,4 +221,10 @@ fetch('https://jsonplaceholder.typicode.com/posts', {
 #### 11. Реализация AJAX с помощью SuperAgent.
 #### 12. Серверные сценарии. CGI - определение, назначение, ключевые особенности.
 #### 13. FastCGI - особенности технологии, преимущества и недостатки относительно CGI.
+[Почитать](https://lectureswww.readthedocs.io/5.web.server/fcgi.html)
+После установления соединения **FastCGI-процесса** с **web-сервером**, между ними начинается обмен данными с использованием простого протокола, решающего две задачи: организация двунаправленного обмена в рамках одного соединения (для эмуляции **STDIN**, **STDOUT**, **STDERR**) и организация нескольких независимых FastCGI-сессий в рамках одного соединения.
+
+Все передаваемые данные оборачиваются в **FastCGI-записи** — единицу данных протокола. **FastCGI-записи** служат для организации двунаправленного обмена и мультиплексирования нескольких сессий в рамках одного соединения.
+
+**FastCGI-запись** состоит из заголовка фиксированной длины, следующего за ним содержимого и выравнивающих данных переменной длины. Каждая запись содержит 7 элементов.
 #### 14. FastCGI сервер на языке Java.

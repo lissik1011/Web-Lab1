@@ -3,7 +3,6 @@
   <head>
     <meta charset="utf-8" />
     <title>Lab 01</title>
-
     <style>
       .header {
         display: flex;
@@ -32,14 +31,12 @@
         padding-left: 15px;
         font-size: 18px;
         line-height: 1.6;
-        font-family: serif;
-        color: #333;
       }
 
       .container {
         display: flex;
         align-items: flex-start;
-        gap: 2.5%;
+        gap: 20px;
         max-width: 800px;
         margin: 0 auto;
         margin-bottom: 10px;
@@ -66,18 +63,6 @@
         margin-top: 10px;
       }
 
-      .query:hover {
-        background-color: #b3dbbd;
-        cursor: pointer;
-        border-radius: 3px;
-        border: 1.5px solid #707070ca;
-      }
-
-      .radio input[type="radio"]:hover {
-        background-color: #b3dbbd;
-        border: 1.5px solid #707070ca;
-      }
-
       .table-block {
         align-items: center;
         gap: 10px;
@@ -97,32 +82,27 @@
         border: 1px solid grey;
         border-collapse: collapse;
         width: 100%;
-        table-layout: fixed;
       }
 
-      table th {
+      th {
         border: 1px solid grey;
         padding: 8px;
         text-align: left;
       }
 
-      table td {
+      td {
         border: 1px solid grey;
         padding: 8px;
         text-align: left;
-        font-weight: normal;
-      }
-
-      tbody {
-        font-weight: normal;
       }
     </style>
+    <script src="script.js"></script>
   </head>
   <body>
     <header class="header">
       <div class="left_header">
         <h2>Лабораторная работа №1</h2>
-        <a class="task" href="task.html">Посмотреть задание</a>
+        <a class="task" href="">Посмотреть задание</a>
       </div>
       <div class="right_header">
         Львова Елизавета Юрьевна
@@ -142,69 +122,65 @@
             name="R"
             id="R"
             placeholder="Введите число от 2 до 5"
-            value="2.5"
           />
         </p>
-        <img src="Graph.png" alt="График функции" width="350" height="350">
-        <!-- <canvas
+        <canvas
           id="graph"
           width="350"
           height="350"
           style="border: 0px solid #ccc"
-        ></canvas> -->
+        ></canvas>
+        <p>Дата и время последнего запроса:</p>
+        <p>Продолжительность обработки запроса:</p>
       </div>
 
       <!-- Справа -->
       <div class="text-block">
         <h3>Попади в область!</h3>
-
-        <p>
-          <label for="X">Координата X: </label>
-        </p>
-        <p class="radio">
-          <input type="radio" value="-2" name="X" /> -2
-          <input type="radio" value="-1.5" name="X" /> -1.5
-          <input type="radio" value="-1" name="X" /> -1
-          <input type="radio" value="-0.5" name="X" /> -0.5
-        </p>
-        <p>
-          <input type="radio" value="0" name="X" checked /> 0
-          <input type="radio" value="0.5" name="X" /> 0.5
-          <input type="radio" value="1" name="X" /> 1
-          <input type="radio" value="1.5" name="X" /> 1.5
-          <input type="radio" value="2" name="X" /> 2
-        </p>
-        <p>
-          <label for="Y">Координата Y: </label>
-          <input
-            type="text"
-            id="Y"
-            name="Y"
-            placeholder="Введите число от -5 до 5"
-            value="0"
-          />
-        </p>
-
-        <button class="query">Показать точку</button>
+        <form>
+          <p>
+            <label for="X">Координата X: </label>
+          </p>
+          <p class="radio">
+            <input type="radio" value="-2" name="X" /> 2
+            <input type="radio" value="-1.5" name="X" /> -1.5
+            <input type="radio" value="-1" name="X" /> -1
+            <input type="radio" value="-0.5" name="X" /> -0.5
+          </p>
+          <p>
+            <input type="radio" value="0" name="X" /> 0
+            <input type="radio" value="0.5" name="X" /> 0.5
+            <input type="radio" value="1" name="X" /> 1
+            <input type="radio" value="1.5" name="X" /> 1.5
+            <input type="radio" value="2" name="X" /> 2
+          </p>
+          <p>
+            <label for="Y">Координата Y: </label>
+            <input
+              type="text"
+              id="Y"
+              name="Y"
+              placeholder="Введите число от -5 до 5"
+            />
+          </p>
+          <button class="query">Показать точку</button>
+        </form>
       </div>
     </div>
 
     <div class="table-block">
       <h3 class="tb_header">История запросов</h3>
-      <table id="table">
-        <thead>
-          <tr>
-            <th style="width: 13%">Радиус R</th>
-            <th style="width: 13%">Коорд. X</th>
-            <th style="width: 13%">Коорд. Y</th>
-            <th style="width: 14%">Статус</th>
-            <th style="width: 28%">Продолжительность обработки</th>
-            <th style="width: 19%">Дата и время</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
+      <table>
+        <tr>
+          <th>ID</th>
+          <th>Радиус R</th>
+          <th>Координата X</th>
+          <th>Координата Y</th>
+          <th>Статус</th>
+          <th>Дата и время</th>
+          <th>Продолжительность обработки</th>
+        </tr>
       </table>
     </div>
-    <script src="script.js"></script>
   </body>
 </html>

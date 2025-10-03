@@ -1,93 +1,155 @@
+const button = document.querySelector('.query');
+
+button.addEventListener('click', () => {
+    const body = makeForm();
+    if (body == null) {
+        return;
+    }
+
+    fetch('http://localhost:8080/fcgi-bin/Server.jar', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: body
+    }).then(async response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status ${response.status}`);
+        }
+        return response.text();
+    })
+    .then(htmlRow => {
+        const tbody = document.querySelector('#table tbody');
+        tbody.insertAdjacentHTML('beforeend', htmlRow);
+        return htmlRow;
+    })
+    .then(data => console.log('Html row from server:\n', data))
+    .catch(error => console.error('Fetch error:', error))
+});
+
+const R = document.getElementById("R");
+const Y = document.getElementById("Y");
+R.addEventListener('paste', (e) => {
+    e.preventDefault(); 
+});
+Y.addEventListener('paste', (e) => {
+    e.preventDefault(); 
+});
+R.addEventListener("input", validateR);
+Y.addEventListener("input", validateY);
 
 
-fetch('http://localhost:8080/fastcgi-bin/server/jar', {
-    method: 'POST',
-    headers: {
-        'ContentType': 'application/x-www-form-urlencoding'
-    },
-    body: 'mama'
-}).then(async response => response.json())
-.then(data => console.log(data))
-.catch(error => console.error('Fetch error:', error))
+function validateR(e) {
+    console.log("Start of validating R");
 
+    e.target.value = e.target.value.replace(/[^0-9.-]/g, "");
+    const input = e.target;
+    const selectionStart = input.selectionStart;
+    let value = input.value;
 
+    if (value === "" || value === "-" || value === ".") {
+        return;
+    }
 
-// document.addEventListener('DOMContentLoaded', () => {
-//   const y = document.getElementById("Y");
+    if (isNaN(Number(value))) {
+        input.value = value.slice(0, selectionStart - 1) + value.slice(selectionStart);
+        input.setSelectionRange(selectionStart - 1, selectionStart - 1);
+    }
+    if (Number(value) > 5) {
+        input.value = value.slice(0, selectionStart - 1) + value.slice(selectionStart);
+        input.setSelectionRange(selectionStart - 1, selectionStart - 1);
+    }
+    if (Number(value) < 2) {
+        input.value = value.slice(0, selectionStart - 1) + value.slice(selectionStart);
+        input.setSelectionRange(selectionStart - 1, selectionStart - 1);
+    }
+}
+function validateY(e) {
+    console.log("Start of validating Y");
 
-//   function validateY(value) {
-//     const num = parseFloat(value);
-//     if (isNaN(num)) return {velid: false, error: 'Это не число.'};
+    e.target.value = e.target.value.replace(/[^0-9.-]/g, "");
+    const input = e.target;
+    const selectionStart = input.selectionStart;
+    let value = input.value;
 
-//     const min = -5, max = 5;
-//     if (max <= num || num <= min) return {valid: false, warning: `Число должно находится в диапазоне [${min}; ${max}]!`};
+    if (value === "" || value === "-" || value === ".") {
+        return;
+    }
 
-//     return {valid: true, value: num};
-//   }
+    if (isNaN(Number(value))) {
+        input.value = value.slice(0, selectionStart - 1) + value.slice(selectionStart);
+        input.setSelectionRange(selectionStart - 1, selectionStart - 1);
+    }
+    if (Number(value) > 5) {
+        input.value = value.slice(0, selectionStart - 1) + value.slice(selectionStart);
+        input.setSelectionRange(selectionStart - 1, selectionStart - 1);
+    }
+    if (Number(value) < -2) {
+        input.value = value.slice(0, selectionStart - 1) + value.slice(selectionStart);
+        input.setSelectionRange(selectionStart - 1, selectionStart - 1);
+    }
+}
+function takeX() {
+    const xRadios = document.querySelectorAll('input[name="X"]');
 
-//   inputY.addEventListener('input', (e) => {
-//     const value = e.target.value;
-//     const result = validateY(value);
-//   })
+    let X = null;
+    for (const radio of xRadios) {
+        if (radio.checked) {
+            X = radio.value;
+            break;
+        }
+    }
+    if (X === null) {
+        alert('Выбери координату X!');
+        return;
+    }
+    return X;
+}
 
-// }
-// )
+function makeForm() {
+    if (!checkForm()) {
+        return null;
+    }
 
+    let R = document.getElementById("R");
+    let Y = document.getElementById("Y");
+    let X = takeX();
+    
+    const formData = new URLSearchParams();
+    formData.append('X', X);
+    formData.append('Y', Y.value);
+    formData.append('R', R.value);
 
+    return formData;
+}
+function checkForm() {
 
+    let R = document.getElementById("R").value;
+    let Y = document.getElementById("Y").value;
+    let X = takeX();
+    console.log("R:", R, "X:", X, "Y:", Y);
 
+    if (!X) {
+        alert("X не выбран!");
+        return false;
+    }
+    if (!Y) {
+        alert("Поле Y не заполнено!");
+        return false;
+    }
+    if (Y < -2 || Y > 5) {
+        alert("Значение Y должно быть от -2 до 5");
+        return false;
+    }
+    if (!R) {
+        alert("Поле R не заполнено!");
+        return false;
+    }
+    if (R < 2 || R > 5) {
+        alert("Значение R должно быть от 2 до 5");
+        return false;
+    }
+    console.log("Form is complited.");
+    return true;
+}
 
-// document.addEventListener('DOMContentLoaded', () => {
-//   const canvas = document.getElementById('graph');
-//   const ctx = canvas.getContext('2d');
-//   const width = canvas.width;
-//   const height = canvas.height;
-
-//   const xMin = -5;
-//   const xMax = 5;
-//   const yMin = -5;
-//   const yMax = 5;
-
-//   function drawFunction() {
-//     ctx.clearRect(0, 0, width, height);
-
-//     // Оси
-//     ctx.strokeStyle = '#ccc';
-//     ctx.lineWidth = 1;
-//     const centerX = width / 2;
-//     const centerY = height / 2;
-
-//     ctx.beginPath();
-//     ctx.moveTo(0, centerY);
-//     ctx.lineTo(width, centerY);
-//     ctx.stroke();
-
-//     ctx.beginPath();
-//     ctx.moveTo(centerX, 0);
-//     ctx.lineTo(centerX, height);
-//     ctx.stroke();
-
-//     // График y = sin(x)
-//     ctx.strokeStyle = '#007bff';
-//     ctx.lineWidth = 2;
-//     ctx.beginPath();
-
-//     const steps = 1000;
-//     for (let i = 0; i <= steps; i++) {
-//       const x = xMin + (i / steps) * (xMax - xMin);
-//       const y = Math.sin(x);
-
-//       const px = ((x - xMin) / (xMax - xMin)) * width;
-//       const py = height - ((y - yMin) / (yMax - yMin)) * height;
-
-//       if (i === 0) {
-//         ctx.moveTo(px, py);
-//       } else {
-//         ctx.lineTo(px, py);
-//       }
-//     }
-//     ctx.stroke();
-//   }
-
-//   drawFunction();
-// });

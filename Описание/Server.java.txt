@@ -1,0 +1,48 @@
+package ru.ifmo.se.web.fastcgi;
+
+import java.util.Arrays;
+import java.util.Properties;
+import com.fastcgi.FCGIInterface;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
+public class Server {
+    public static void main(String[] args) throws IOException {
+        FCGIInterface fcgi = new FCGIInterface();
+        while (fcgi.FCGIaccept() >= 0) {
+            System.out.println(echoPage(""));
+            String method = FCGIInterface.request.params.getProperty("REQUEST_METHOD");
+            if (method.equals("GET")) {
+                System.out.println(echoPage("Success!"));
+            } else {
+                System.out.println(echoPage("smth error"));
+            }
+            continue;
+        }
+    }
+
+    private static String echoPage(String echo) {
+        String content = """
+                <h1>Received request body</h1>
+                <p>
+                %s
+                </p>
+                """.formatted(echo);
+        return """
+                HTTP/1.1 200 OK
+                Content-Type: text/html
+                Content-Length: %d
+
+
+                %s
+                """.formatted(content.getBytes(StandardCharsets.UTF_8).length, content);
+    }
+
+    private static Properties parseInput(String input) {
+        Properties props = new Properties();
+        Arrays.stream(input.split("&"))
+            .forEach(value -> props.setProperty(value.split("=")[0], value.split("=")[1]));
+        return props;
+    }
+}
