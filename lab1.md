@@ -80,3 +80,20 @@ exec /usr/bin/java -jar server.jar
 chmod +x /home/studs/s466560/httpd-root/fcgi-bin/start-server.sh
 ```
 ![[Pasted image 20250927172206.png]]
+
+
+
+
+```java
+    
+        if (x > r / 2 || x < -r || y < -r || y > r / 2)
+            return false;
+        if (x > 0 && y > 0 && (x * x + y * y) > (r * r) / 4)
+            return false; // 1 четверть
+        if (x < 0 && y > 0 && x < -r && y > r / 2)
+            return false; // 2 четверть
+        if (x < 0 && y < 0 && y < (-0.5 * x - r))
+            return false; // 3 четверть
+        if (x > 0 && y < 0)
+            return false; // 4 четверть
+```

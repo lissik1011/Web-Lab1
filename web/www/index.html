@@ -24,10 +24,13 @@
         line-height: 1;
       }
 
+      a {
+        color: #4c835a; /* зелёный цвет */
+      }
+
       .right_header {
         flex: 3;
         margin-top: 20px;
-        /* margin-right: 10px; */
         border-left: 1px solid black;
         padding-left: 15px;
         font-size: 18px;
@@ -63,19 +66,20 @@
       }
 
       .query {
+        width: 130px;
+        height: 25px;
         margin-top: 10px;
+        margin-right: center;
+        background-color: #b3dbbdb8;
+        border-radius: 3px;
+        border: 0.3px solid #707070ca;
       }
 
       .query:hover {
         background-color: #b3dbbd;
         cursor: pointer;
         border-radius: 3px;
-        border: 1.5px solid #707070ca;
-      }
-
-      .radio input[type="radio"]:hover {
-        background-color: #b3dbbd;
-        border: 1.5px solid #707070ca;
+        border: 0.3px solid #707070ca;
       }
 
       .table-block {
@@ -116,6 +120,46 @@
       tbody {
         font-weight: normal;
       }
+
+      table td {
+        /* max-height: 100px; Ограничиваем высоту — иначе не будет прокрутки
+        overflow-y: auto; Прокрутка по вертикали
+        overflow-x: hidden; Не прокручивать по горизонтали (опционально) */
+        word-wrap: break-word; /* Перенос длинных слов */
+        padding: 8px;
+        border: 1px solid grey;
+        font-size: 14px;
+      }
+
+      .radio button {
+        width: 50px;
+        height: 33px;
+        margin: 3px;
+        margin-top: -3px;
+
+        display: inline-flex;
+        align-items: center;
+        cursor: pointer;
+
+        font-weight: 500;
+        justify-content: center;
+        background-color: #ffffff2b;
+        border-radius: 3px;
+        border: 0.3px solid #707070ca;
+      }
+
+      .radio button:hover {
+        background-color: #b3dbbd5f;
+        border-radius: 3px;
+        border: 0.3px solid #707070ca;
+      }
+
+      .radio button.selected {
+        background-color: #b3dbbdb8;
+        border-radius: 3px;
+        border: 0.3px solid #707070ca;
+      }
+
     </style>
   </head>
   <body>
@@ -142,38 +186,42 @@
             name="R"
             id="R"
             placeholder="Введите число от 2 до 5"
-            value="2.5"
+            value="4"
           />
         </p>
-        <img src="Graph.png" alt="График функции" width="350" height="350">
-        <!-- <canvas
-          id="graph"
-          width="350"
-          height="350"
+        <!-- <img src="Graph.png" alt="График функции" width="400" height="400" /> -->
+        <canvas
+          id="canvas"
+          width="380"
+          height="380"
           style="border: 0px solid #ccc"
-        ></canvas> -->
+        ></canvas>
       </div>
 
       <!-- Справа -->
       <div class="text-block">
         <h3>Попади в область!</h3>
 
-        <p>
-          <label for="X">Координата X: </label>
-        </p>
-        <p class="radio">
-          <input type="radio" value="-2" name="X" /> -2
-          <input type="radio" value="-1.5" name="X" /> -1.5
-          <input type="radio" value="-1" name="X" /> -1
-          <input type="radio" value="-0.5" name="X" /> -0.5
-        </p>
-        <p>
-          <input type="radio" value="0" name="X" checked /> 0
-          <input type="radio" value="0.5" name="X" /> 0.5
-          <input type="radio" value="1" name="X" /> 1
-          <input type="radio" value="1.5" name="X" /> 1.5
-          <input type="radio" value="2" name="X" /> 2
-        </p>
+        <div>
+          <p>
+            <label for="X">Координата X: </label>
+          </p>
+          <p class="radio">
+            <button type="button" value="-2" name="X">-2</button>
+            <button type="button" value="-1.5" name="X">-1.5</button>
+            <button type="button" value="-1" name="X">-1</button>
+            <button type="button" value="-0.5" name="X">-0.5</button>
+            <input type="hidden" id="hiddenX" value="0" name="X">
+          </p>
+          <p class="radio">
+            <button type="button" value="0" name="X" class="selected">0</button>
+            <button type="button" value="0.5" name="X">0.5</button>
+            <button type="button" value="1" name="X">1</button>
+            <button type="button" value="1.5" name="X">1.5</button>
+            <button type="button" value="2" name="X">2</button>
+          </p>
+        </div>
+
         <p>
           <label for="Y">Координата Y: </label>
           <input

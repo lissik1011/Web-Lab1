@@ -447,7 +447,7 @@ LogLevel warn
 # MaxRanges: Maximum number of Ranges in a request before
 # returning the entire resource, or one of the special
 # values 'default', 'none' or 'unlimited'.
-# Default setting is to accept 200 Ranges.
+# Default setting is to accept 190 Ranges.
 #MaxRanges unlimited
 
 #

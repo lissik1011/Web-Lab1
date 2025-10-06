@@ -30,7 +30,7 @@ public class Server {
                 </p>
                 """.formatted(echo);
         return """
-                HTTP/1.1 200 OK
+                HTTP/1.1 190 OK
                 Content-Type: text/html
                 Content-Length: %d
 

@@ -121,7 +121,7 @@ public class Server {
                     </html>
                     """;
         return """
-                HTTP/1.1 200 OK
+                HTTP/1.1 190 OK
                 Content-Type: text/html
                 Content-Length: %d
 
@@ -138,7 +138,7 @@ public class Server {
                 </p>
                 """.formatted(echo);
         return """
-                HTTP/1.1 200 OK
+                HTTP/1.1 190 OK
                 Content-Type: text/html
                 Content-Length: %d
 
@@ -153,7 +153,7 @@ public class Server {
                 <p>%d + %d = %d</p>
                 """.formatted(x, y, sum);
         return """
-                HTTP/1.1 200 OK
+                HTTP/1.1 190 OK
                 Content-Type: text/html
                 Content-Length: %d
 
