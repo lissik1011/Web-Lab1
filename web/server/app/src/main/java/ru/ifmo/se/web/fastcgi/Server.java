@@ -12,6 +12,8 @@ import java.util.logging.Logger;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 public class Server {
     private static Logger logger;
@@ -21,11 +23,13 @@ public class Server {
         FCGIInterface fcgi = new FCGIInterface();
         logger.info("Server start...");
         while (fcgi.FCGIaccept() >= 0) {
+
+            System.out.println(echoPage("mama"));
+
             long start = System.nanoTime();
             String method = FCGIInterface.request.params.getProperty("REQUEST_METHOD");
 
             if (method == null) {
-                logger.info("Method is null.");
                 System.out.println(errorResult("Unsupported HTTP method: null"));
                 continue;
             }
@@ -37,7 +41,6 @@ public class Server {
                     System.out.println(errorResult("Content-Type is null"));
                     continue;
                 }
-
                 if (!contentType.equals("application/x-www-form-urlencoded")) {
                     System.out.println(errorResult("Content-Type is not supported"));
                     continue;
@@ -59,10 +62,10 @@ public class Server {
                     continue;
                 }
 
-                double r, x, y;
+                BigDecimal r, x, y;
                 try {
-                    r = Double.parseDouble(rStr.toString());
-                    if (r < 2 || r > 5) {
+                    r = new BigDecimal(rStr.toString());
+                    if (r.compareTo(new BigDecimal("2.0")) < 0 || r.compareTo(new BigDecimal("5.0")) > 0) {
                         System.out.println(errorResult("R must be in [2, 5]"));
                         continue;
                     }
@@ -71,8 +74,8 @@ public class Server {
                     continue;
                 }
                 try {
-                    x = Double.parseDouble(xStr.toString());
-                    if (x < -2 || x > 2) {
+                    x = new BigDecimal(xStr.toString());
+                    if (x.compareTo(new BigDecimal("-2.0")) < 0 || x.compareTo(new BigDecimal("2.0")) > 0) {
                         System.out.println(errorResult("X must be in [-2, 2]"));
                         continue;
                     }
@@ -81,8 +84,8 @@ public class Server {
                     continue;
                 }
                 try {
-                    y = Double.parseDouble(yStr.toString());
-                    if (y < -5 || y > 5) {
+                    y = new BigDecimal(yStr.toString());
+                    if (y.compareTo(new BigDecimal("-5.0")) < 0 || y.compareTo(new BigDecimal("5.0")) > 0) {
                         System.out.println(errorResult("R must be in [-5, 5]"));
                         continue;
                     }
@@ -90,17 +93,15 @@ public class Server {
                     System.out.println(errorResult("Y must be a double"));
                     continue;
                 }
-
                 result(r, x, y, status(r, x, y), (System.nanoTime() - start) / 1_000);
                 continue;
             }
-
             System.out.println(errorResult("Unsupported HTTP method: " + method));
 
         }
     }
 
-    private static void result(double r, double x, double y, boolean result, long nano) {
+    private static void result(BigDecimal r, BigDecimal x, BigDecimal y, boolean result, long nano) {
         String content = """
                 <tr>
                     <td>%s</td>
@@ -114,20 +115,45 @@ public class Server {
                 result ? "Попадание" : "Промах",
                 LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss dd.MM.yyyy")),
                 nano);
+        logger.info(("Success request! R = %s, X = %s, Y = %s. Result: %s").formatted(r, x, y, result ? "Попадание" : "Промах"));
         System.out.println(echoPage(content));
     }
 
-    private static boolean status(double r, double x, double y) {
-        if (x > r / 2 || x < -r || y < -r || y > r / 2)
+    private static boolean status(BigDecimal r, BigDecimal x, BigDecimal y) {
+        BigDecimal zero = BigDecimal.ZERO;
+        BigDecimal half = new BigDecimal("0.5");
+        BigDecimal two = new BigDecimal("2");
+        BigDecimal four = new BigDecimal("4");
+
+        if (x.compareTo(r.divide(two, RoundingMode.HALF_UP)) > 0 ||
+                x.compareTo(r.negate()) < 0 ||
+                y.compareTo(r.negate()) < 0 ||
+                y.compareTo(r.divide(two, RoundingMode.HALF_UP)) > 0) {
             return false;
-        if (x > 0 && y > 0 && (x * x + y * y) > (r * r) / 4)
-            return false; // 1 четверть
-        if (x < 0 && y > 0 && x < -r && y > r / 2)
-            return false; // 2 четверть
-        if (x < 0 && y < 0 && y < (-0.5 * x - r))
-            return false; // 3 четверть
-        if (x > 0 && y < 0)
-            return false; // 4 четверть
+        }
+
+        BigDecimal xSquared = x.multiply(x);
+        BigDecimal ySquared = y.multiply(y);
+        BigDecimal sumSquares = xSquared.add(ySquared);
+        BigDecimal rSquared = r.multiply(r);
+        BigDecimal quarterCircle = rSquared.divide(four, RoundingMode.HALF_UP);
+
+        if (x.compareTo(zero) > 0 && y.compareTo(zero) > 0 &&
+                sumSquares.compareTo(quarterCircle) > 0) {
+            return false; // 1 четверть — вне круга
+        }
+
+        if (x.compareTo(zero) < 0 && y.compareTo(zero) < 0) {
+            BigDecimal halfX = x.multiply(half);
+            BigDecimal lineValue = halfX.negate().subtract(r);
+            if (y.compareTo(lineValue) < 0) {
+                return false; // точка ниже линии — вне области
+            }
+        }
+
+        if (x.compareTo(zero) > 0 && y.compareTo(zero) < 0) {
+            return false; // 4 четверть — всегда вне области
+        }
         return true;
     }
 
@@ -136,7 +162,7 @@ public class Server {
                 %s
                 """.formatted(echo);
         return """
-                HTTP/1.1 200 OK
+                HTTP/1.1 190 OK
                 Content-Type: text/html
                 Content-Length: %d
 
@@ -150,6 +176,7 @@ public class Server {
                 <h1>Error</h1>
                 <p>%s</p>
                 """.formatted(error);
+        logger.info("Error: \n%s\n".formatted(error));
         return """
                 HTTP/1.1 400 Bad Request
                 Content-Type: text/html
@@ -161,9 +188,13 @@ public class Server {
 
     private static Properties formParser(String requestBodyStr) {
         var props = new Properties();
-        Arrays.stream(requestBodyStr.split("&"))
-                .forEach(keyValue -> props.setProperty(keyValue.split("=")[0], keyValue.split("=")[1]));
-        return props;
+        try {
+            Arrays.stream(requestBodyStr.split("&"))
+                    .forEach(keyValue -> props.setProperty(keyValue.split("=")[0], keyValue.split("=")[1]));
+            return props;
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     private static String readRequestBody() throws IOException {
@@ -175,7 +206,6 @@ public class Server {
         byte[] requestBodyRaw = new byte[readBytes];
         buf.get(requestBodyRaw);
         buf.clear();
-
         return new String(requestBodyRaw, StandardCharsets.UTF_8);
     }
 
