@@ -24,8 +24,6 @@ public class Server {
         logger.info("Server start...");
         while (fcgi.FCGIaccept() >= 0) {
 
-            System.out.println(echoPage("mama"));
-
             long start = System.nanoTime();
             String method = FCGIInterface.request.params.getProperty("REQUEST_METHOD");
 
@@ -162,8 +160,9 @@ public class Server {
                 %s
                 """.formatted(echo);
         return """
-                HTTP/1.1 190 OK
+                HTTP/1.1 200 OK
                 Content-Type: text/html
+                Access-Control-Allow-Origin: *
                 Content-Length: %d
 
 
@@ -180,6 +179,7 @@ public class Server {
         return """
                 HTTP/1.1 400 Bad Request
                 Content-Type: text/html
+                Access-Control-Allow-Origin: *
                 Content-Length: %d
 
                 %s
