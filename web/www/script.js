@@ -8,7 +8,7 @@
         button.addEventListener('click', function() {
             buttons.forEach(btn => btn.classList.remove('selected'));
             this.classList.add('selected');
-            const selectedValue = this.getAttribute('value');
+            const selectedValue = this.getAttribute('value')/10;
             document.getElementById('hiddenX').value = selectedValue;
         });
     });
@@ -27,10 +27,8 @@
             body: body
         }).then(response => {
             if (!response.ok) {
-                // console.log(response);
                 throw new Error(`HTTP error! status ${response.status}`);
             }
-            // console.log(response.text());
             return response.text();
         })
         .then(htmlRow => {
@@ -38,8 +36,15 @@
             tbody.insertAdjacentHTML('beforeend', htmlRow);
             return htmlRow;
         })
-        .then(data => console.log('Html row from server:\n', data))
-        .catch(error => console.error('Fetch error:', error))
+        // .then(data => console.log('Html row from server:\n', data))
+        .catch(error => {
+            console.error('Fetch failed: ', {
+            message: error.message,
+            stack: error.stack,
+            name: error.name
+        });
+        console.log('Ошибка при отправке запроса:\n' + error.message);
+        })
     });
 
     const R = document.getElementById("R");
@@ -118,7 +123,6 @@
         
         const formData = new URLSearchParams();
         formData.append('X', X.value);
-        console.log(X.value);
         formData.append('Y', Y.value);
         formData.append('R', R.value);
 
@@ -169,7 +173,6 @@
 
     function drawPoint() {
         const scale = 30;
-        let r = Number(R.value);
         let x = Number(X.value)*scale + 190;
         let y = -Number(Y.value)*scale + 190;
 
@@ -261,7 +264,7 @@
         ctx.lineTo(373, 198);
         ctx.moveTo(380, 190);
         ctx.lineTo(373, 182);
-        ctx.fillText(x, 371, 170);
+        ctx.fillText("X", 371, 170);
 
         ctx.closePath();
         ctx.stroke();
@@ -318,6 +321,37 @@
 
     buttons.forEach(button => {
     button.addEventListener('click', draw);
+    });
+
+    canvas.addEventListener('click', (e) => {
+        const rect = canvas.getBoundingClientRect();
+
+        const xRaw = ((e.clientX - rect.left - 190)/30);
+        const xRoundedToHalf = Math.round(xRaw * 2) / 2;
+        const x = xRoundedToHalf.toFixed(1);
+        const y = (-(e.clientY - rect.top - 190)/30).toFixed(5);
+
+        if (x > 2 || x < -2 || y > 5 || y < -2) return;
+
+        document.getElementById("hiddenX").value = x;
+        document.getElementById("Y").value = y;
+        
+        buttons.forEach(button => {
+            button.classList.remove('selected');
+        });
+
+        const xNum = parseFloat(x)*10;
+        const targetButton = Array.from(buttons).find(btn => {
+            const bAtt = parseFloat(btn.getAttribute('value'))
+            return Math.abs(bAtt - xNum) < 5;
+            }
+        );
+
+        if (targetButton) {
+            targetButton.classList.add('selected');
+        }
+
+        draw();
     });
 
 
