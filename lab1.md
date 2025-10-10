@@ -12,18 +12,17 @@ curl -X POST -d "x=5&y=10" http://localhost:13040/
 
 ### Helios
 
+Пробросить порт
+```bash
+ssh -L 8080:localhost:13041 s466560@helios.cs.ifmo.ru -p 2222
+```
+
 Запустить apache
 ``` shell
 /usr/local/sbin/httpd -f /home/studs/s466560/httpd-root/httpd-conf.conf -X
 ```
 
-Пробросить порт
-```bash
-ssh -L 8080:localhost:13041 s466560@helios.cs.ifmo.ru -p 2222
-```
-      }
-
-	Запустить сервер
+Запустить сервер
 ```bash
 java -DFCGI_PORT=13041 -jar httpd-root/fcgi-bin/Server.jar
 ```

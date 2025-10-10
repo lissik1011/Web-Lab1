@@ -23,7 +23,7 @@
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
-            },
+            },  
             body: body
         }).then(response => {
             if (!response.ok) {
@@ -106,7 +106,7 @@
             input.value = value.slice(0, selectionStart - 1) + value.slice(selectionStart);
             input.setSelectionRange(selectionStart - 1, selectionStart - 1);
         }
-        if (Number(value) < -2) {
+        if (Number(value) < -5) {
             input.value = value.slice(0, selectionStart - 1) + value.slice(selectionStart);
             input.setSelectionRange(selectionStart - 1, selectionStart - 1);
         }
@@ -144,8 +144,9 @@
             alert("Поле Y не заполнено!");
             return false;
         }
-        if (Y < -2 || Y > 5) {
-            alert("Значение Y должно быть от -2 до 5");
+        if (Y < -5 || Y > 5) {
+            console.log(y);
+            alert("Значение Y должно быть от -5 до 5");
             return false;
         }
         if (!R) {
@@ -331,7 +332,7 @@
         const x = xRoundedToHalf.toFixed(1);
         const y = (-(e.clientY - rect.top - 190)/30).toFixed(5);
 
-        if (x > 2 || x < -2 || y > 5 || y < -2) return;
+        if (x > 2 || x < -2 || y > 5 || y < -5) return;
 
         document.getElementById("hiddenX").value = x;
         document.getElementById("Y").value = y;

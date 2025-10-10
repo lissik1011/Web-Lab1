@@ -84,13 +84,18 @@ public class Server {
                 try {
                     y = new BigDecimal(yStr.toString());
                     if (y.compareTo(new BigDecimal("-5.0")) < 0 || y.compareTo(new BigDecimal("5.0")) > 0) {
-                        System.out.println(errorResult("R must be in [-5, 5]"));
+                        System.out.println(errorResult("Y must be in [-5, 5]"));
                         continue;
                     }
                 } catch (NumberFormatException e) {
                     System.out.println(errorResult("Y must be a double"));
                     continue;
                 }
+
+                BigDecimal multiplied = x.multiply(BigDecimal.valueOf(2));
+                BigDecimal rounded = multiplied.setScale(0, RoundingMode.HALF_UP);
+                x =  rounded.divide(BigDecimal.valueOf(2), 1, RoundingMode.UNNECESSARY);
+
                 result(r, x, y, status(r, x, y), (System.nanoTime() - start) / 1_000);
                 continue;
             }
@@ -134,14 +139,14 @@ public class Server {
         BigDecimal ySquared = y.multiply(y);
         BigDecimal sumSquares = xSquared.add(ySquared);
         BigDecimal rSquared = r.multiply(r);
-        BigDecimal quarterCircle = rSquared.divide(four, RoundingMode.HALF_UP);
+        BigDecimal quarterCircle = rSquared.divide(four, 10, RoundingMode.HALF_UP);
 
-        if (x.compareTo(zero) > 0 && y.compareTo(zero) > 0 &&
+        if (x.compareTo(zero) >= 0 && y.compareTo(zero) >= 0 &&
                 sumSquares.compareTo(quarterCircle) > 0) {
             return false; // 1 четверть — вне круга
         }
 
-        if (x.compareTo(zero) < 0 && y.compareTo(zero) < 0) {
+        if (x.compareTo(zero) <= 0 && y.compareTo(zero) <= 0) {
             BigDecimal halfX = x.multiply(half);
             BigDecimal lineValue = halfX.negate().subtract(r);
             if (y.compareTo(lineValue) < 0) {
